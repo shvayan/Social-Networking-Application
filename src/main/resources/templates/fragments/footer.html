@@ -1,0 +1,39 @@
+<nav th:fragment="footer" class="navbar navbar-light bg-white border-top fixed-bottom mobile-footer-nav justify-content-around py-2"
+     style="display:flex;">
+    <a class="nav-link text-center  " th:href="@{/home}">
+        <i class="bi bi-chat-dots " style="font-size: 1.5rem;"></i><br>
+        <span class="small ">Chats</span>
+    </a>
+    <a class="nav-link text-center " th:href="@{/post}">
+        <i class="bi bi-circle-half" style="font-size: 1.5rem;"></i><br>
+        <span class="small">Post</span>
+    </a>
+    <a class="nav-link text-center" th:href="@{/profile}">
+        <i class="bi bi-person" style="font-size: 1.5rem;"></i><br>
+        <span class="small">Profile</span>
+    </a>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const currentPath = window.location.pathname;
+
+            document.querySelectorAll(".mobile-footer-nav a").forEach(link => {
+
+
+
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("text-primary", "fw-bold");
+                }
+
+            });
+
+        });
+
+
+
+
+    </script>
+</nav>
+

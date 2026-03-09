@@ -1,0 +1,90 @@
+
+<div th:fragment="script">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        if (window.matchMedia("(max-width: 768px)").matches) {
+            console.log("Mobile View");
+        } else {
+            alert("This page is optimized for mobile view. Please switch to a mobile device or resize your browser window.");
+        }
+
+        var baseUrl = 'http://localhost:8080';
+
+        //Hazel.js
+        (function($) {
+            $.fn.hazel = function(message, type = 'success', duration = 2000) {
+                // Define type-based background colors
+                var typeStyles = {
+                    success: '#0c8',
+                    warning: '#ff8c00',
+                    danger: '#f36',
+                    dark: '#0f172a',
+                    primary: '#8957ff'
+                };
+
+                // Get background color based on type
+                var backgroundColor = typeStyles[type] || 'black';
+
+                // Create a container for notifications if it doesn't exist
+                var $container = $('#hazel-container');
+                if ($container.length === 0) {
+                    $container = $('<div>', {
+                        id: 'hazel-container',
+                        css: {
+                            position: 'fixed',
+                            bottom: '20px',
+                            right: '20px',
+                            'z-index': 9999,
+                            display: 'flex',
+                            'flex-direction': 'column',
+                            gap: '10px',
+                            'align-items': 'flex-end'
+                        }
+                    }).appendTo('body');
+                }
+
+                // Create a new notification element
+                var $notification = $('<div>', {
+                    css: {
+                        padding: '10px',
+                        'border-radius': '5px',
+                        'background-color': backgroundColor,
+                        color: 'white',
+                        'white-space': 'nowrap',
+                        'box-shadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
+                        opacity: 0, // Start hidden for fade-in effect
+                        transition: 'opacity 0.2s ease'
+                    },
+                    text: message
+                }).appendTo($container);
+
+                // Fade in the notification
+                setTimeout(() => {
+                    $notification.css('opacity', 1);
+                }, 0);
+
+                // Fade out and remove the notification after the duration
+                setTimeout(() => {
+                    $notification.css('opacity', 0);
+                    setTimeout(() => {
+                        $notification.remove();
+                    }, 200); // Match fade-out duration
+                }, duration);
+
+                return this;
+
+                // Helper function to find the highest z-index in the DOM
+                function getHighestZIndex() {
+                    var highest = 0;
+                    $('*').each(function() {
+                        var current = parseInt($(this).css('z-index'), 10);
+                        if (!isNaN(current) && current > highest) {
+                            highest = current;
+                        }
+                    });
+                    return highest;
+                }
+            };
+        }(jQuery));
+    </script>
+</div>

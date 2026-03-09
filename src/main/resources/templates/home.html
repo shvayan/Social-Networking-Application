@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelloApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: #f5f6fa;
+        }
+
+        .chat-sidebar,
+        .chat-detail {
+            background: #fff;
+        }
+
+        .chat-message {
+            max-width: 75%;
+        }
+
+        .chat-message.me {
+            background: #007bff;
+            color: #fff;
+            margin-left: auto;
+        }
+
+        .chat-message.other {
+            background: #f1f0f0;
+            color: #222;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+        }
+
+        .media-thumb {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .chat-list-item.active {
+            background: #f0f4ff;
+        }
+
+        .chat-list-item {
+            cursor: pointer;
+        }
+
+        .chat-media-img {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-right: 4px;
+        }
+
+        .chat-media-img:last-child {
+            margin-right: 0;
+        }
+
+        .chat-input-area {
+            background: #fff;
+        }
+
+
+        @media (max-width: 767.98px) {
+            .chat-input-area {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 64px;
+                /* height of footer navbar */
+                z-index: 1051;
+                box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+            }
+
+            #chatArea {
+                padding-bottom: 110px !important;
+                /* enough for input and footer */
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .mobile-footer-nav {
+                display: flex !important;
+            }
+
+            .chat-sidebar {
+                display: flex !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+                min-height: calc(100vh - 64px) !important;
+            }
+
+            .flex-grow-1.overflow-auto {
+                height: calc(100vh - 64px - 56px) !important;
+                min-height: 0 !important;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .mobile-footer-nav {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid vh-100 p-0">
+
+    <div class="sidebar-backdrop" id="sidebarBackdrop" style="display:none;"></div>
+    <div class="row h-100 g-0">
+        <!-- Sidebar (desktop only) -->
+        <div class="col-12 col-md-3 border-end chat-sidebar flex-column p-0" id="sidebar" style="min-height:100vh;">
+
+            <div class="p-3 border-bottom bg-white">
+                <div class="position-relative">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="chatSearchInput" class="form-control border-start-0"
+                               placeholder="Search chats..." aria-label="Search chats" autocomplete="off"
+                               onkeyup="showSearchResults(this.value)">
+                    </div>
+                    <div id="chatSearchDropdown" class="dropdown-menu w-100"></div>
+                </div>
+            </div>
+
+
+
+            <div class="flex-grow-1 overflow-auto d-flex flex-column" id="chatArea">
+                <div class="list-group list-group-flush flex-grow-1">
+<!--                    <a href="#"-->
+<!--                       class="list-group-item list-group-item-action d-flex align-items-center chat-list-item ">-->
+<!--                        <img src="https://randomuser.me/api/portraits/men/2.jpg"-->
+<!--                             class="rounded-circle me-2 chat-avatar" alt="User">-->
+<!--                        <div>-->
+<!--                            <div class="fw-bold">Harry Maguire</div>-->
+<!--                            <small>You need to improve now</small>-->
+<!--                        </div>-->
+<!--                        <span class="ms-auto small text-muted">09:12 AM</span>-->
+<!--                        <span class="badge bg-primary rounded-pill ms-2">2</span>-->
+<!--                    </a>-->
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<div th:replace="fragments/script :: script"></div>
+
+<script>
+    $(document).ready(function () {
+        const token = localStorage.getItem("token");
+        $.ajax({
+            url: baseUrl + "/api/v1/chat/get-user-chat-list",
+            method: "GET",
+            contentType: "application/json",
+
+            headers: {
+                "Authorization": token
+            },
+
+            success: function (response) {
+                // alert("User info retrieved successfully: " + );
+
+                const  userData = response.data;
+                console.log(userData);
+
+
+                userData.forEach(function(chat) {
+
+                    if(chat.imageUrl == null || chat.imageUrl.trim() === "") {
+                        chat.imageUrl = "image.jpg";
+
+                    }
+
+                    var image = baseUrl+"/uploads/" + chat.imageUrl;
+                    let time = new Date(chat.lastMessageTimestamp).toLocaleTimeString();
+                    const chatItem = `
+                        <a href="/chat?username=${chat.username}"
+                           class="list-group-item list-group-item-action d-flex align-items-center chat-list-item">
+                            <img src="${image}" class="rounded-circle me-2 chat-avatar" alt="User">
+                            <div>
+                                <div class="fw-bold">${chat.username}</div>
+                                <small>${chat.lastMessageContent}</small>
+                            </div>
+                            <span class="ms-auto small text-muted">${time}</span>
+
+                        </a>
+                    `;
+                    $("#chatArea .list-group").append(chatItem);
+                });
+
+            },
+
+            error: function (err) {
+                if(err.status === 401) {
+                    alert("Unauthorized. Please log in again.");
+                    window.location.href = "/login";
+                } else {
+                    $(this).hazel('An error occurred. Please try again.', 'danger', 3000);
+                }
+            }
+        });
+    });
+
+    const chatSearchDropdown = document.getElementById('chatSearchDropdown');
+
+
+    function showSearchResults(value) {
+        const query = value.trim().toLowerCase();
+        chatSearchDropdown.innerHTML = '';
+
+        if (!query && query.length < 3) {
+            chatSearchDropdown.classList.remove('show');
+            return;
+        }
+
+
+
+        const token = localStorage.getItem("token");
+        $.ajax({
+            url: baseUrl + "/api/v1/user/searchUsername?username=" + query,
+            method: "GET",
+            contentType: "application/json",
+
+            headers: {
+                "Authorization": token
+            },
+
+            success: function (response) {
+
+                const data = response.data;
+                console.log(data);
+                data.forEach(function(user) {
+
+
+                    if(user.imageUrl == null || user.imageUrl.trim() === "") {
+                        user.imageUrl = "image.jpg";
+
+                    }
+
+                    var image = baseUrl+"/uploads/" + user.imageUrl ;
+
+                    const searchItem = `
+                        <a href="/guestProfile?username=${user.username}"
+                           class="list-group-item list-group-item-action d-flex align-items-center chat-list-item">
+                            <img src="${image}" class="rounded-circle me-2 chat-avatar" alt="User">
+                            <div>
+                                <div class="fw-bold">${user.name}</div>
+
+                            </div>
+
+
+                        </a>
+                    `;
+
+
+
+                    chatSearchDropdown.appendChild($(searchItem)[0]);
+                });
+
+            },
+
+            error: function (err) {
+                if(err.status === 401) {
+                    alert("Unauthorized. Please log in again.");
+                    window.location.href = "/login";
+                } else {
+                    $(this).hazel('An error occurred. Please try again.', 'danger', 3000);
+                }
+            }
+        });
+
+        // matches.slice(0, 8).forEach((item) => {
+        //     const name = item.querySelector('.fw-bold')?.textContent.trim() || 'Chat';
+        //     const message = item.querySelector('small')?.textContent.trim() || '';
+        //     const href = item.getAttribute('href') || '#';
+        //     const result = document.createElement('a');
+        //     result.className = 'dropdown-item';
+        //     result.href = href;
+        //     result.textContent = message ? name + ' - ' + message : name;
+        //     chatSearchDropdown.appendChild(result);
+        // });
+
+        chatSearchDropdown.classList.add('show');
+    }
+    // ${chat.unreadCount > 0 ? `<span class="badge bg-primary rounded-pill ms-2">${chat.unreadCount}</span>` : ''}
+</script>
+
+</body>
+
+</html>
