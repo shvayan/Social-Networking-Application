@@ -25,18 +25,14 @@ public class MailConfig {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.hostinger.com");
         mailSender.setPort(emailPort);
-
-        //ToDo : Create an account on gmail and app password using
-        // https://myaccount.google.com/apppasswords and put those
-        // details here when you run app locally
         mailSender.setUsername(emailUsername); //Email Id
         mailSender.setPassword(emailPassword); //App Password
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
+        props.put("mail.smtp.ssl.enable", "true");
+//        props.put("mail.debug", "true");
 
         return mailSender;
     }

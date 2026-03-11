@@ -27,8 +27,6 @@ public class ChatController {
         // Implementation for fetching posts
         HttpResponseDto response = new HttpResponseDto();
         try {
-
-
             Long userId = (Long) SecurityContextHolder
                     .getContext()
                     .getAuthentication()
