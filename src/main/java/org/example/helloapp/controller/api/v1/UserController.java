@@ -106,7 +106,7 @@ public class UserController {
             response.setStatusCode(HttpStatus.OK.value());
             response.setSuccess(true);
         } catch (RuntimeException e) {
-            response.setMessage(e.getMessage());
+                response.setMessage(e.getMessage());
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setSuccess(false);

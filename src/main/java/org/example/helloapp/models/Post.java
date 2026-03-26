@@ -19,6 +19,7 @@ public class Post extends BaseModel{
 
     @ManyToOne
     @JsonBackReference
+    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "post",fetch = FetchType.EAGER)

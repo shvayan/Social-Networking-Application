@@ -10,7 +10,7 @@ public interface IPostService {
 
     void deletePost(Long postId, Long userId);
 
-    Page<Post> getPostsByUserId(Long userId, int page, int size);
+    Page<Post> getPostsByUserId(String query,Long userId, int page, int size);
 
     void likePost(Long postId, Long userId);
 
@@ -19,5 +19,7 @@ public interface IPostService {
 
 
     Post getPostById(Long userId ,Long postId);
+
+    Page<Post> getAllPosts(String query, int page, int size);
 
 }

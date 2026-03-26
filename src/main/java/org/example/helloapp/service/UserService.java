@@ -5,11 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.example.helloapp.dto.GuestResponseDto;
 import org.example.helloapp.dto.UserResponseDto;
 import org.example.helloapp.models.BlockStatus;
+import org.example.helloapp.models.Post;
 import org.example.helloapp.models.User;
 import org.example.helloapp.models.UserToUserSetting;
 import org.example.helloapp.repository.UserRepository;
 import org.example.helloapp.repository.UserToUserSettingRepository;
 
+import org.example.helloapp.repository.searchStrategies.GenericSpecificationBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.io.File;
@@ -131,6 +133,7 @@ public class UserService implements IUserService{
 
     @Override
     public List<GuestResponseDto> searchGuestWithUsername(String username) {
+
 
         List<User> users = this.userRepository.findByUsernameLike("%" + username + "%");
 

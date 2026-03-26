@@ -5,8 +5,10 @@ import org.example.helloapp.exception.UnauthorisedException;
 import org.example.helloapp.models.*;
 import org.example.helloapp.repository.*;
 
+import org.example.helloapp.repository.searchStrategies.GenericSpecificationBuilder;
 import org.example.helloapp.util.MediaHelper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +37,7 @@ public class PostService implements IPostService{
 
 
     private final ViewerRepository viewerRepository;
+
 
     @Override
     public void createPost(String description, String mediaUrl, Long userId) {
@@ -80,14 +83,25 @@ public class PostService implements IPostService{
     }
 
     @Override
-    public Page<Post> getPostsByUserId(Long userId, int page, int size) {
-        Pageable pageable;
+    public Page<Post> getPostsByUserId(String query,Long userId, int page, int size) {
 
+
+        GenericSpecificationBuilder<Post> builder = new GenericSpecificationBuilder<>();
+
+        if(query != null && !query.isEmpty()){
+            builder.where("description", ":", query)
+                    .whereOr("user.email", ":", query)
+                    .whereOr("user.username", ":", query);
+        }
+
+
+
+        Pageable pageable;
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         pageable = PageRequest.of(page, size, sort);
 
-        Page<Post> posts = this.postRepository.findAll(pageable);
 
+        Page<Post> posts = this.postRepository.findAll(builder.build(),pageable);
 
         for(Post post : posts){
             User user = post.getUser();
@@ -191,6 +205,28 @@ public class PostService implements IPostService{
         }
 
         return post;
+    }
+
+    @Override
+    public Page<Post> getAllPosts(String query, int page, int size) {
+
+        return null;
+
+//        GenericSpecificationBuilder<Post> builder = new GenericSpecificationBuilder<>();
+//
+//        if(query != null && !query.isEmpty()){
+//            builder.where("description", ":", query);
+//        }
+//
+//        if(query != null && !query.isEmpty()){
+//            builder.whereOr("user.email", ":", query);
+//        }
+//
+//        Pageable pageable;
+//        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+//        pageable = PageRequest.of(page, size, sort);
+//
+//        return this.postRepository.findAll(builder.build(), pageable);
     }
 
 }

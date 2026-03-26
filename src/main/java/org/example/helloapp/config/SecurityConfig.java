@@ -26,7 +26,7 @@ public class SecurityConfig {
             throws UnauthorisedException { // Configure security settings
 
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(  csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(

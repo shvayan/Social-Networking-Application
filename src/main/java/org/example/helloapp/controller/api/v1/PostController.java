@@ -105,7 +105,7 @@ public class PostController {
                     .getAuthentication()
                     .getPrincipal();
             // Example: Fetch posts for a user (replace with actual user ID and pagination parameters)
-            Page<Post> posts = postService.getPostsByUserId(userId, request.getPage(), request.getSize());
+            Page<Post> posts = postService.getPostsByUserId(request.getSearch(),userId, request.getPage(), request.getSize());
             response.setMessage("Posts fetched successfully");
             response.setStatus(HttpStatus.OK);
             response.setStatusCode(HttpStatus.OK.value());
@@ -181,6 +181,34 @@ public class PostController {
             response.setStatusCode(HttpStatus.OK.value());
             response.setSuccess(true);
             response.setData(post);
+        } catch (RuntimeException e) {
+            response.setMessage(e.getMessage());
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setSuccess(false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/getPostsTest")
+    public ResponseEntity<HttpResponseDto> getPostsTest(@RequestBody PostFilterRequest request) {
+        // Implementation for fetching posts
+        HttpResponseDto response = new HttpResponseDto();
+        try {
+
+
+            Long userId = (Long) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+            // Example: Fetch posts for a user (replace with actual user ID and pagination parameters)
+            Page<Post> posts = postService.getAllPosts(request.getSearch(), request.getPage(), request.getSize());
+            response.setMessage("Posts fetched successfully");
+            response.setStatus(HttpStatus.OK);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setSuccess(true);
+            response.setData(posts);
         } catch (RuntimeException e) {
             response.setMessage(e.getMessage());
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
